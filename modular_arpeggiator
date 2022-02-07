@@ -1,0 +1,26 @@
+#with sonic pi
+#Marc St. Pierre
+# 2/07/2022
+
+use_synth :beep
+use_synth_defaults amp: 0.1, release: 0.1
+use_bpm 60
+
+
+scl = (scale :c4, :major, num_octaves: 2)
+voices = 5 #can adjust and reevaluate the number of list items being sequenced
+key_change = 0  #change the value 0 to a positive or negative integer to modulate the key, suggested +2
+arpeggi = 2 #change the step value to have a more far reaching arpeggiation
+
+mod = [3, 6, 9, 12, 15].take(voices) 
+define :player do |i| mod.each {|j| play scl[i % j] + key_change}; sleep 0.25 end
+live_loop :this do 6.times {player(tick step: arpeggi)} end 
+
+live_loop :that do
+  # this is just a tonic function to ground the scale changes that you make in the code above
+  ##| stop
+  use_synth :chiplead
+  notes = [5,1,4].ring
+  play scl[notes.tick], amp: 0.12, release: 2
+  sync :this
+end
